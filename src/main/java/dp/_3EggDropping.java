@@ -21,6 +21,8 @@ public class _3EggDropping {
     public int solve(int floors, int eggs){
         int a = minTries_Rec(floors, eggs,new Integer[floors+1][eggs+1]);
         int b = minTries_DP(floors, eggs);
+        int c = minTries_Mathmetical(floors, eggs);
+        Preconditions.checkArgument(a==c, "Recurion gives " + a + " Mathemical approach gives " + c);
         Preconditions.checkArgument(a==b, "Recursion gives " + a + " DP gives " + b);
         return a;
     }
@@ -40,6 +42,7 @@ public class _3EggDropping {
         return memo[floors][eggs];
     }
 
+    // Time complexity O(floor^2 * eggs)
     private int minTries_DP(int floors, int eggs) {
         int[][] dp = new int[floors+1][eggs+1];
         // if no. of floors = 1, no. of tries = 1
@@ -65,5 +68,65 @@ public class _3EggDropping {
         return dp[floors][eggs];
     }
 
+    //Time Complexity O(egg Log Floors)
+    private int minTries_Mathmetical(int floors, int eggs) {
+        // say F(T,e) gives the maximum floor that can be tried with T trials and e eggs
+        // With T tries we can have mix of e successful and failed tries
+        // If there are 0 failed tries it is C(T,0), 1 failed tries C(T,1)
+        // f(T,e) = Summation of C(T,i)  0<=i<=eggs
+        //f(T,e) >= N
+
+        int lo=0, hi=floors;
+        while(lo < hi){
+            int mid = (lo+hi)/2;
+            int sum = sumOfBinomialCoeff(mid, eggs, floors);
+            if (sum >= floors)
+                hi = mid;
+            else
+                lo = mid + 1;
+        }
+        return lo;
+    }
+
+    private int sumOfBinomialCoeff(int T, int k, int sum) {
+        // C(T,1) = T; C(T,0) = 1; C(T,T) = 1
+        // C(T,x) = C(T, T-x)
+        // C(n,k) = n/1*(n-1)/2*...*(n-k+1)/k
+        int term = 1, res = 0;
+        for (int i = 1; i <=k; i++) {
+            term *=T-i+1;
+            term /=i;
+            res+=term;
+            if (res >= sum) break;
+        }
+        return res;
+    }
+    /*
+
+     public int superEggDrop(int K, int N) {
+        int lo = 1, hi = N;
+        while (lo < hi) {
+            int mi = (lo + hi) / 2;
+            if (f(mi, K, N) < N)
+                lo = mi + 1;
+            else
+                hi = mi;
+        }
+
+        return lo;
+    }
+
+    public int f(int x, int K, int N) {
+        int ans = 0, r = 1;
+        for (int i = 1; i <= K; ++i) {
+            r *= x-i+1;
+            r /= i;
+            ans += r;
+            if (ans >= N) break;
+        }
+        return ans;
+    }
+
+     */
 
 }
