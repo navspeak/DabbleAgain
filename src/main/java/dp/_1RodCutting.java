@@ -43,7 +43,9 @@ public class _1RodCutting {
          */
         for (int i = 1; i <= prices.length ; i++) {
             for (int j = 1; j <= length; j++) {
-                int p1 = j>=i? prices[i-1] + dp[i][j-i] : 0;
+                int p1 = 0;
+                if (j>=i)
+                    p1 = prices[i-1] + dp[i][j-i];
                 int p2 = dp[i-1][j];
                 dp[i][j] = Math.max(p1, p2);
             }
