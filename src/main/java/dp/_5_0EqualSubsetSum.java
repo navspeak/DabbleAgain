@@ -4,10 +4,10 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
-public class _5EqualPartition {
+public class _5_0EqualSubsetSum {
 
     public static void main(String[] args) {
-        _5EqualPartition ep = new _5EqualPartition();
+        _5_0EqualSubsetSum ep = new _5_0EqualSubsetSum();
         boolean a = ep.isPartionable(new int[] {1,2,3,4});
         System.out.println(a==true? "Test1 passed": "Test1 failed. Expected true. Got false");
 
@@ -61,6 +61,21 @@ public class _5EqualPartition {
                 }
             }
         }
+        printparticipants(dp, vals, sum);
         return dp[vals.length][sum];
+    }
+
+    private void printparticipants(boolean[][] dp, int[] vals, int sum) {
+        int i = vals.length, j = sum;
+        System.out.print("{ ");
+        while(i>0 & j >=0){
+            if (dp[i][j] != dp[i-1][j]) {
+                System.out.print( vals[i-1] + ", ");
+                j = j - vals[i-1];
+            } else {
+                i--;
+            }
+        }
+        System.out.print("} gives " + sum + " \n");
     }
 }
