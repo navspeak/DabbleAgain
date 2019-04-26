@@ -24,7 +24,7 @@ public class knapsack {
     private static int solve(int[] weights, int[] profits, int capacity) {
         if (weights.length != profits.length)
             throw new RuntimeException("Weights and profits array mismatch");
-        Integer[][] memo = new Integer[weights.length+1][capacity+1];
+        Integer[][] memo = new Integer[weights.length][capacity+1];
         int a = knapsack_rec(weights, profits, capacity, 0, memo);
         int b = knapsack_dp(weights, profits, capacity);
         int c = knapsack_dp_spaceOptimized(weights, profits, capacity);
