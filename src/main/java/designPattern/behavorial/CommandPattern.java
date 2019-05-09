@@ -3,7 +3,7 @@ package designPattern.behavorial;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Command {
+public class CommandPattern {
     public static void main(String[] args) {
         // Runnable is an example
 
