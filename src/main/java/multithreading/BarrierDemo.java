@@ -1,5 +1,10 @@
 package multithreading;
 
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+
 public class BarrierDemo  {
     public static void main( String args[] ) throws Exception{
         Barrier.runTest();
@@ -8,97 +13,114 @@ public class BarrierDemo  {
 
 class Barrier {
 
-    int count = 0;
+    final int totalThreads;
+    int count;
     int released = 0;
-    int totalThreads;
+    final Runnable runnable;
 
-    public Barrier(int totalThreads) {
+    public Barrier(int totalThreads, Runnable runnable) {
         this.totalThreads = totalThreads;
+        this.runnable = runnable;
     }
 
     public static void runTest() throws InterruptedException {
-        final Barrier barrier = new Barrier(3);
+        //final Barrier barrier = new Barrier(3, ()-> System.out.println("Barrier Reached " + Thread.currentThread().getName()));
+        // Barrier action always runs in last thread reaching the barrier
+        final CyclicBarrier barrier = new CyclicBarrier(3, () -> System.out.println("Barrier action " +
+                Thread.currentThread().getName()));
 
-        Thread p1 = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    System.out.println("Thread 1");
-                    barrier.await();
-                    System.out.println("Thread 1");
-                    barrier.await();
-                    System.out.println("Thread 1");
-                    barrier.await();
-                } catch (InterruptedException ie) {
-                }
+        Thread t1 = new Thread(()->{
+            try {
+                System.out.println("One Thread has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                System.out.println("Two Threads have arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                System.out.println("Three Threads has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
-
-        Thread p2 = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                    System.out.println("Thread 2");
-                    barrier.await();
-                    Thread.sleep(500);
-                    System.out.println("Thread 2");
-                    barrier.await();
-                    Thread.sleep(500);
-                    System.out.println("Thread 2");
-                    barrier.await();
-                } catch (InterruptedException ie) {
-                }
+            catch (BrokenBarrierException e) {
+                System.out.println("Barrier was broken " + Thread.currentThread().getName());
             }
-        });
+        }, "Thread 1");
 
-        Thread p3 = new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(1500);
-                    System.out.println("Thread 3");
-                    barrier.await();
-                    Thread.sleep(1500);
-                    System.out.println("Thread 3");
-                    barrier.await();
-                    Thread.sleep(1500);
-                    System.out.println("Thread 3");
-                    barrier.await();
-                } catch (InterruptedException ie) {
-                }
+        Thread t2 = new Thread(()->{
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+                System.out.println("One Thread has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                TimeUnit.MILLISECONDS.sleep(500);
+                System.out.println("Two Threads have arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                TimeUnit.MILLISECONDS.sleep(500);
+                System.out.println("Three Threads has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+            catch (BrokenBarrierException e) {
+                System.out.println("Barrier was broken " + Thread.currentThread().getName());
+            }
+        }, "Thread 2");
 
-        p1.start();
-        p2.start();
-        p3.start();
+        Thread t3 = new Thread(()->{
+            try {
+                TimeUnit.MILLISECONDS.sleep(800);
+                System.out.println("One Thread has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                TimeUnit.MILLISECONDS.sleep(500);
+                System.out.println("Two Threads have arrived - " + Thread.currentThread().getName());
+                barrier.await();
+                TimeUnit.MILLISECONDS.sleep(500);
+                System.out.println("Three Threads has arrived - " + Thread.currentThread().getName());
+                barrier.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            catch (BrokenBarrierException e) {
+                System.out.println("Barrier was broken " + Thread.currentThread().getName());
+            }
+        }, "Thread 3");
 
-        p1.join();
-        p2.join();
-        p3.join();
+//        Thread t4 = new Thread(()-> {
+//            try {
+//                TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(500, 900));
+//                barrier.reset();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        });
+       t1.start();
+       t2.start();
+       t3.start();
+       //t4.start();
+       t1.join();
+       t2.join();
+       t3.join();
+       //t4.join();
     }
 
 
     public synchronized void await() throws InterruptedException {
 
-        while (count == totalThreads)
+        while(count == totalThreads)
             wait();
-
         count++;
-
         if (count == totalThreads) {
             notifyAll();
             released = totalThreads;
+            runnable.run();
         } else {
-
-            while (count < totalThreads)
+            while(count < totalThreads)
                 wait();
         }
-
         released--;
         if (released == 0) {
             count = 0;
-            // remember to wakeup any threads
-            // waiting on line#81
             notifyAll();
         }
+
+
     }
 }
