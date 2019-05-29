@@ -104,6 +104,17 @@ class Barrier {
 
     public synchronized void await() throws InterruptedException {
 
+        // t1,t2,t3
+        // t1, t2 arrive and count = 2 < 3 => thus they wait at line#127
+        // t3 arrive and count = 3. All waiting threads must be notified at line#124
+        //  => Till this point t1 and t2 are just waiting
+        //  => So we when t3 notifies, it sets released = 3
+        //  => each thread when they exit, decrement released
+        //  => only when released = 0 we set count = 0
+        // So,
+        // Say instead of t1 or t2, t3 again acquires the lock.
+        // The count is 3 till now and we must wait till all threads
+        // exit the await() method by calling notify when released = 0
         while(count == totalThreads)
             wait();
         count++;
