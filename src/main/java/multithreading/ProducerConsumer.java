@@ -6,10 +6,39 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+/*
+see how in case of multiple prod n cons deadlock can happen when notify() is used:
+https://stackoverflow.com/questions/37026/java-notify-vs-notifyall-all-over-again
+ */
+
 public class ProducerConsumer {
     final static int MAX_SIZE = 5;
     final static Object lock = new Object();
     final static Queue<String> queue = new LinkedList<>();
+
+    public static void main(String[] args) throws InterruptedException {
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
+
+        Thread prodThread = new Thread(producer);
+        Thread consumerThread = new Thread(consumer);
+
+
+        System.out.println("Producer and Consumer simulation will start" +
+                ". Press Y to cancel");
+        sleep(2);
+        prodThread.start();
+        consumerThread.start();
+
+        Scanner in = new Scanner(System.in);
+        if (in.next().equalsIgnoreCase("Y")); {
+            System.out.println("Cancelling....");
+            prodThread.interrupt();
+            consumerThread.interrupt();
+        }
+
+        prodThread.join();
+    }
 
     protected static void sleep(int x) {
         try {
@@ -93,27 +122,5 @@ public class ProducerConsumer {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
 
-        Thread prodThread = new Thread(producer);
-        Thread consumerThread = new Thread(consumer);
-
-
-        System.out.println("Producer and Consumer simulation will start" +
-                ". Press Y to cancel");
-        sleep(2);
-        prodThread.start();
-        consumerThread.start();
-
-        Scanner in = new Scanner(System.in);
-        if (in.next().equalsIgnoreCase("Y")); {
-            System.out.println("Cancelling....");
-            prodThread.interrupt();
-            consumerThread.interrupt();
-        }
-
-        prodThread.join();
-    }
 }

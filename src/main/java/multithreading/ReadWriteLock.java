@@ -39,10 +39,7 @@ class ReadWriteLockDemo {
 
         final ReadWriteLock rwl = new ReadWriteLock();
 
-        Thread t1 = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
+        Thread t1 = new Thread( () -> {
                 try {
 
                     System.out.println("Attempting to acquire write lock in t1: " + System.currentTimeMillis());
@@ -57,13 +54,10 @@ class ReadWriteLockDemo {
                 } catch (InterruptedException ie) {
 
                 }
-            }
-        });
+            });
 
-        Thread t2 = new Thread(new Runnable() {
 
-            @Override
-            public void run() {
+        Thread t2 = new Thread(()->{
                 try {
 
                     System.out.println("Attempting to acquire write lock in t2: " + System.currentTimeMillis());
@@ -73,13 +67,9 @@ class ReadWriteLockDemo {
                 } catch (InterruptedException ie) {
 
                 }
-            }
-        });
+            });
 
-        Thread tReader1 = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
+        Thread tReader1 = new Thread(() ->{
                 try {
 
                     rwl.acquireReadLock();
@@ -88,18 +78,14 @@ class ReadWriteLockDemo {
                 } catch (InterruptedException ie) {
 
                 }
-            }
-        });
+            });
 
-        Thread tReader2 = new Thread(new Runnable() {
 
-            @Override
-            public void run() {
+        Thread tReader2 = new Thread(() -> {
                 System.out.println("Read lock about to release: " + System.currentTimeMillis());
                 rwl.releaseReadLock();
                 System.out.println("Read lock released: " + System.currentTimeMillis());
-            }
-        });
+            });
 
         tReader1.start();
         t1.start();
