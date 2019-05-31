@@ -15,7 +15,7 @@ class SynchronousExecutorDemo
         System.out.println("main thread exiting...");
 
         //Solution
-        SynchronousExecutor executor1 = new SynchronousExecutor();
+        SynchronousWrapper executor1 = new SynchronousWrapper();
         executor.asynchronousExecution(() -> {
             System.out.println("I am done");
         });
@@ -24,20 +24,21 @@ class SynchronousExecutorDemo
     }
 }
 
+@FunctionalInterface
 interface Callback {
     public void done();
 }
 
 
-class SynchronousExecutor extends Executor {
+class SynchronousWrapper extends Executor {
 
     @Override
     public void asynchronousExecution(Callback callback) throws Exception {
 
-        Object signal = new Object(); // effictively final
+        Object signal = new Object(); // effectively final
         final boolean[] isDone = new boolean[1]; // to make it effectively final
 
-        Callback cb = new Callback() {
+        Callback cbWrapper = new Callback() {
 
             @Override
             public void done() {
@@ -50,7 +51,7 @@ class SynchronousExecutor extends Executor {
         };
 
         // Call the asynchronous executor
-        super.asynchronousExecution(cb);
+        super.asynchronousExecution(cbWrapper);
 
         synchronized (signal) {
             while (!isDone[0]) {
@@ -61,6 +62,7 @@ class SynchronousExecutor extends Executor {
     }
 }
 
+//given
 class Executor {
 
     public void asynchronousExecution(Callback callback) throws Exception {
