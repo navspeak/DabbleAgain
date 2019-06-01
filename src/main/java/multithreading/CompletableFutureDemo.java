@@ -1,12 +1,11 @@
 package multithreading;
 
 import java.time.LocalTime;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 //https://www.baeldung.com/java-completablefuture
 public class CompletableFutureDemo {
+    static CompletableFutureDemo demo = new CompletableFutureDemo();
     public Future<String> calculateAsync() throws InterruptedException {
       CompletableFuture<String> completableFuture =
               new CompletableFuture<>();
@@ -18,6 +17,17 @@ public class CompletableFutureDemo {
       });
       // LocalTime time = LocalTime.now()
       return completableFuture;
+    }
+
+    public void test1(){
+        try {
+            Future<String> completableFuture = demo.calculateAsync(); // won't block
+            String result = completableFuture.get(); // block
+            System.out.println(result.equals("Hello") ? "Pass": "Fail");
+
+        } catch (InterruptedException  | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     public Future<String> calculateAsync1() throws InterruptedException {
@@ -34,8 +44,21 @@ public class CompletableFutureDemo {
         return completableFuture;
     }
 
+    public void test2(){
+        try {
+            Future<String> completableFuture = CompletableFuture.completedFuture("DummyHello");
+            String result = completableFuture.get();
+            System.out.println(result.equals("DummyHello") ? "Pass": "Fail");
+        } catch (InterruptedException  | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
 
-
+    public void test3() throws Exception{
+        Future<String> completableFuture = demo.calculateAsync1();
+        String result = completableFuture.get();
+        System.out.println(result.equals("Line 1 from  a file!!") ? "Pass": "Fail");
+    }
 
     /*
     Suppose we didn’t manage to find a result and decided to cancel an asynchronous execution altogether.
@@ -57,6 +80,16 @@ public class CompletableFutureDemo {
 
         return completableFuture;
     }
+//    @Rule
+//    public ExpectedException exception = ExpectedException.none();
+//    @Test
+//    public void testException() throws Throwable{
+//        exception.expect(CancellationException.class);
+//        //exception.expectMessage("test");
+//        Future<String> completableFuture = demo.calculateAsyncWithCancellation();
+//        completableFuture.get();
+//
+//    }
 
     public String readFromALineFromAFile() {
         try {
@@ -64,6 +97,8 @@ public class CompletableFutureDemo {
         } catch (InterruptedException e) {}
         return "Line 1 from  a file";
     }
+
+
 
 
 
