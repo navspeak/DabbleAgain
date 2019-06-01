@@ -80,6 +80,7 @@
 * used for mutual exclusion. 
 * used to guard shared data such as a queue, linkedlist, or simple int, string etc
 * allows only a single thread to access a resource
+* Java uses Mesa monitor (not Hoarse monitors)
 
 # Semaphore
 * used for limiting access to a collection of resources (permits)
@@ -106,4 +107,15 @@ as a mutex with a wait set.
 
   > Monitor [ activeThread = null or a thread that comes from]
   
-  > Monitor Set [ [WaitSet]  [EntrySet] ]
+  > Monitor Set [ [ WaitSet ]  [ EntrySet ] ]
+  
+# Amdahl's law  
+
+Amdahl's law describes the theoretical limit at best a program can achieve by using additional computing resources. 
+> S(n) = 1 / [(1-P) + P/n[]
+* S(n) is the speed-up achieved by using n cores or threads.
+* P is the fraction of the program that is parallelizable
+* (1 - P) is the fraction of the program that must be executed serially.
+
+if 10% runs serially, the max speed up that can be achieved is 10 times what can be achieved using single core:
+S(INFINTE) = 1/ [(1-0.9) + 0.9/INF] = 1/0.1 = 10
