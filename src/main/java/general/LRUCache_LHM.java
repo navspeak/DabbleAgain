@@ -1,13 +1,15 @@
+package general;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class MyLRUCache<K,V> {
+public class LRUCache_LHM<K,V> {
 	
 	private HashMap<K, V> map;
 	private static final float load = 0.75f;
 	private int capacity;
 	
-	public MyLRUCache(int c) {
+	public LRUCache_LHM(int c) {
 		int capacity = c;
 		int hashTablecapacity = (int)(Math.ceil(c/load)) + 1;
 		map = new LinkedHashMap<>(hashTablecapacity, load,true);
@@ -37,7 +39,7 @@ public class MyLRUCache<K,V> {
 	// Race condition in hashmap rehashing
 	// - https://mailinator.blogspot.com/2009/06/beautiful-race-condition.htmls
 	public static void main(String[] args) {
-		MyLRUCache<String, String>  cache= new MyLRUCache<>(3);
+		LRUCache_LHM<String, String> cache= new LRUCache_LHM<>(3);
 		cache.put("1", "One"); 
 		cache.put("2", "two");
 		cache.put("3", "three");
