@@ -2,7 +2,7 @@ package general;
 
 import java.util.*;
 
-public class MyLRUCache1<K, V> {
+public class MyLRUCache<K, V> {
     final int MAX = 5;
     int size = 0;
 
@@ -90,7 +90,7 @@ public class MyLRUCache1<K, V> {
     }
 
     public static void main(String[] args) {
-        MyLRUCache1 cache = new MyLRUCache1();
+        MyLRUCache cache = new MyLRUCache();
         cache.put(1, "one");
         cache.put(2, "two");
         cache.put(3, "two");
